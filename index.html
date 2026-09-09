@@ -75,7 +75,6 @@
       margin-bottom: 18px;
     }
 
-    /* Code Section */
     #codeSection {
       display: flex;
       flex-direction: column;
@@ -103,7 +102,6 @@
       box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
     }
 
-    /* Chat Section */
     #chatSection {
       display: none;
       flex-direction: column;
@@ -205,13 +203,11 @@
       <h1>Message Ali</h1>
       <p class="subtitle" id="subtitle">Enter the access code</p>
 
-      <!-- Code Section -->
       <div id="codeSection">
         <input type="password" id="code" placeholder="••••" maxlength="8" autocomplete="off" autofocus>
         <div class="status" id="codeStatus"></div>
       </div>
 
-      <!-- Chat Section -->
       <div id="chatSection">
         <div id="messages"></div>
 
@@ -235,10 +231,11 @@
     const messageInput = document.getElementById("messageInput");
     const sendBtn = document.getElementById("sendBtn");
     const status = document.getElementById("status");
-    const codeStatus = document.getElementById("codeStatus");
     const subtitle = document.getElementById("subtitle");
 
     let eventSource = null;
+    let lastSentMessage = null;        // used to prevent duplicate
+    let lastSentTime = 0;
 
     // Check code
     codeInput.addEventListener("input", () => {
@@ -246,39 +243,37 @@
         codeSection.style.display = "none";
         chatSection.style.display = "flex";
         subtitle.textContent = "Connected";
-        codeStatus.textContent = "";
         messageInput.focus();
         startListening();
       }
     });
 
-    // Start listening for incoming messages (from phone)
     function startListening() {
       if (eventSource) eventSource.close();
 
-      // Using ntfy Server-Sent Events
       eventSource = new EventSource(`https://ntfy.sh/${TOPIC}/sse`);
 
       eventSource.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
 
-          // Ignore our own messages if needed, or show everything
           if (data.event === "message" && data.message) {
-            addMessage(data.message, "received");
+            const msg = data.message;
+
+            // Prevent showing the message we just sent
+            const now = Date.now();
+            if (msg === lastSentMessage && (now - lastSentTime) < 4000) {
+              return; // ignore duplicate
+            }
+
+            addMessage(msg, "received");
           }
         } catch (e) {
-          console.log("Parse error", e);
+          console.log("Error parsing message", e);
         }
-      };
-
-      eventSource.onerror = () => {
-        // Auto reconnect is handled by the browser mostly
-        console.log("SSE connection error - will retry");
       };
     }
 
-    // Send message
     sendBtn.addEventListener("click", sendMessage);
     messageInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") sendMessage();
@@ -303,6 +298,10 @@
         });
 
         if (res.ok) {
+          // Remember this message so we can ignore it when it comes back
+          lastSentMessage = msg;
+          lastSentTime = Date.now();
+
           addMessage(msg, "sent");
           messageInput.value = "";
           status.textContent = "";
