@@ -192,9 +192,6 @@
       margin-top: 10px;
       min-height: 20px;
     }
-
-    .status.success { color: #34d399; }
-    .status.error { color: #f87171; }
   </style>
 </head>
 <body>
@@ -205,7 +202,6 @@
 
       <div id="codeSection">
         <input type="password" id="code" placeholder="••••" maxlength="8" autocomplete="off" autofocus>
-        <div class="status" id="codeStatus"></div>
       </div>
 
       <div id="chatSection">
@@ -234,8 +230,7 @@
     const subtitle = document.getElementById("subtitle");
 
     let eventSource = null;
-    let lastSentMessage = null;        // used to prevent duplicate
-    let lastSentTime = 0;
+    let pendingSent = new Set(); // stores messages we just sent
 
     // Check code
     codeInput.addEventListener("input", () => {
@@ -260,16 +255,17 @@
           if (data.event === "message" && data.message) {
             const msg = data.message;
 
-            // Prevent showing the message we just sent
-            const now = Date.now();
-            if (msg === lastSentMessage && (now - lastSentTime) < 4000) {
-              return; // ignore duplicate
+            if (pendingSent.has(msg)) {
+              // This is a message we just sent → show as "sent"
+              pendingSent.delete(msg);
+              addMessage(msg, "sent");
+            } else {
+              // Message coming from the phone
+              addMessage(msg, "received");
             }
-
-            addMessage(msg, "received");
           }
         } catch (e) {
-          console.log("Error parsing message", e);
+          console.log(e);
         }
       };
     }
@@ -286,6 +282,9 @@
       sendBtn.disabled = true;
       status.textContent = "Sending...";
 
+      // Remember this message so we can recognize it when it comes back
+      pendingSent.add(msg);
+
       try {
         const res = await fetch(`https://ntfy.sh/${TOPIC}`, {
           method: "POST",
@@ -297,20 +296,13 @@
           }
         });
 
-        if (res.ok) {
-          // Remember this message so we can ignore it when it comes back
-          lastSentMessage = msg;
-          lastSentTime = Date.now();
+        if (!res.ok) throw new Error();
 
-          addMessage(msg, "sent");
-          messageInput.value = "";
-          status.textContent = "";
-        } else {
-          throw new Error();
-        }
+        messageInput.value = "";
+        status.textContent = "";
       } catch (e) {
+        pendingSent.delete(msg);
         status.textContent = "Failed to send";
-        status.className = "status error";
       }
 
       sendBtn.disabled = false;
