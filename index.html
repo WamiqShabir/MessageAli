@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Ali</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #050508;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.14) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      animation: pulse 10s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+      50% { transform: translate(-50%, -50%) scale(1.18); opacity: 0.8; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 28px;
+      padding: 44px 28px 36px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.55);
+      text-align: center;
+      animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: -0.6px;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: #71717a;
+      font-size: 0.95rem;
+      margin-bottom: 32px;
+    }
+
+    /* Code Section */
+    #codeSection {
+      display: block;
+    }
+
+    #code {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 17px;
+      font-size: 1.55rem;
+      color: white;
+      text-align: center;
+      letter-spacing: 12px;
+      outline: none;
+      margin-bottom: 20px;
+      transition: all 0.25s ease;
+    }
+
+    #code:focus {
+      border-color: rgba(59, 130, 246, 0.55);
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    }
+
+    /* Message Section */
+    #messageSection {
+      display: none;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      color: #a1a1aa;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 1rem;
+      color: white;
+      min-height: 140px;
+      resize: vertical;
+      outline: none;
+      font-family: inherit;
+      margin-bottom: 20px;
+      transition: all 0.25s ease;
+    }
+
+    textarea:focus {
+      border-color: rgba(59, 130, 246, 0.55);
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    }
+
+    #sendBtn {
+      width: 100%;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      padding: 17px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 10px 28px -5px rgba(59, 130, 246, 0.4);
+      transition: all 0.25s ease;
+    }
+
+    #sendBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px -5px rgba(59, 130, 246, 0.5);
+    }
+
+    #sendBtn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .status {
+      margin-top: 22px;
+      font-size: 0.9rem;
+      color: #a1a1aa;
+      min-height: 22px;
+      text-align: center;
+    }
+
+    .status.success { color: #34d399; }
+    .status.error { color: #f87171; }
+
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #52525b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Message Ali</h1>
+      <p class="subtitle" id="subtitle">Enter the access code</p>
+
+      <!-- Code Section -->
+      <div id="codeSection">
+        <input type="password" id="code" placeholder="••••" maxlength="8" autocomplete="off" autofocus>
+      </div>
+
+      <!-- Message Section -->
+      <div id="messageSection">
+        <label for="message">Your message</label>
+        <textarea id="message" placeholder="Type your message here..."></textarea>
+        <button id="sendBtn">Send Message</button>
+      </div>
+
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="footer">Private messaging</div>
+  </div>
+
+  <script>
+    const TOPIC = "MessageAli-2525-123";
+    const CORRECT_CODE = "2525";
+
+    const codeInput = document.getElementById("code");
+    const codeSection = document.getElementById("codeSection");
+    const messageSection = document.getElementById("messageSection");
+    const messageInput = document.getElementById("message");
+    const sendBtn = document.getElementById("sendBtn");
+    const status = document.getElementById("status");
+    const subtitle = document.getElementById("subtitle");
+
+    // Check code
+    codeInput.addEventListener("input", () => {
+      if (codeInput.value === CORRECT_CODE) {
+        codeSection.style.display = "none";
+        messageSection.style.display = "block";
+        subtitle.textContent = "Type a message to send";
+        status.textContent = "Code accepted";
+        status.className = "status success";
+        messageInput.focus();
+
+        // Clear success message after a moment
+        setTimeout(() => {
+          status.textContent = "";
+          status.className = "status";
+        }, 1500);
+      } else {
+        status.textContent = "";
+        status.className = "status";
+      }
+    });
+
+    // Send message
+    sendBtn.addEventListener("click", sendMessage);
+
+    messageInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        sendMessage();
+      }
+    });
+
+    async function sendMessage() {
+      const msg = messageInput.value.trim();
+
+      if (!msg) {
+        status.textContent = "Please type a message first";
+        status.className = "status error";
+        return;
+      }
+
+      status.textContent = "Sending...";
+      status.className = "status";
+      sendBtn.disabled = true;
+
+      try {
+        const res = await fetch(`https://ntfy.sh/${TOPIC}`, {
+          method: "POST",
+          body: msg,
+          headers: {
+            "Title": "Message from Ali",
+            "Priority": "high",
+            "Tags": "speech_balloon"
+          }
+        });
+
+        if (res.ok) {
+          status.textContent = "Message sent successfully!";
+          status.className = "status success";
+          messageInput.value = "";
+
+          setTimeout(() => {
+            status.textContent = "";
+            status.className = "status";
+          }, 2500);
+        } else {
+          throw new Error();
+        }
+      } catch (e) {
+        status.textContent = "Failed to send. Try again.";
+        status.className = "status error";
+      }
+
+      sendBtn.disabled = false;
+    }
+  </script>
+</body>
+</html>
