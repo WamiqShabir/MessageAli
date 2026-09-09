@@ -22,7 +22,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
       position: relative;
     }
 
@@ -31,61 +31,57 @@
       position: absolute;
       width: 700px;
       height: 700px;
-      background: radial-gradient(circle, rgba(59, 130, 246, 0.14) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.13) 0%, transparent 70%);
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 0;
-      animation: pulse 10s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
-      50% { transform: translate(-50%, -50%) scale(1.18); opacity: 0.8; }
     }
 
     .container {
       position: relative;
       z-index: 1;
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
     }
 
     .card {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 28px;
-      padding: 44px 28px 36px;
+      border-radius: 24px;
+      padding: 28px 20px 20px;
       backdrop-filter: blur(24px);
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.55);
-      text-align: center;
-      animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to { opacity: 1; transform: translateY(0); }
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
+      max-height: 720px;
     }
 
     h1 {
-      font-size: 1.9rem;
+      font-size: 1.6rem;
       font-weight: 700;
-      letter-spacing: -0.6px;
-      margin-bottom: 6px;
+      text-align: center;
+      margin-bottom: 4px;
       background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .subtitle {
+      text-align: center;
       color: #71717a;
-      font-size: 0.95rem;
-      margin-bottom: 32px;
+      font-size: 0.9rem;
+      margin-bottom: 18px;
     }
 
     /* Code Section */
     #codeSection {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
     }
 
     #code {
@@ -93,100 +89,114 @@
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 16px;
-      padding: 17px;
-      font-size: 1.55rem;
+      padding: 16px;
+      font-size: 1.5rem;
       color: white;
       text-align: center;
-      letter-spacing: 12px;
+      letter-spacing: 10px;
       outline: none;
-      margin-bottom: 20px;
-      transition: all 0.25s ease;
+      margin-bottom: 16px;
     }
 
     #code:focus {
       border-color: rgba(59, 130, 246, 0.55);
-      background: rgba(255, 255, 255, 0.07);
       box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
     }
 
-    /* Message Section */
-    #messageSection {
+    /* Chat Section */
+    #chatSection {
       display: none;
-      text-align: left;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
     }
 
-    label {
-      display: block;
-      font-size: 0.9rem;
-      color: #a1a1aa;
-      margin-bottom: 10px;
-      font-weight: 500;
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 4px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    textarea {
-      width: 100%;
+    .message {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+
+    .message.received {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message.sent {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message .time {
+      font-size: 0.7rem;
+      color: #71717a;
+      margin-top: 4px;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+    }
+
+    #messageInput {
+      flex: 1;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 16px;
-      font-size: 1rem;
+      border-radius: 14px;
+      padding: 12px 14px;
       color: white;
-      min-height: 140px;
-      resize: vertical;
+      font-size: 0.95rem;
       outline: none;
       font-family: inherit;
-      margin-bottom: 20px;
-      transition: all 0.25s ease;
     }
 
-    textarea:focus {
-      border-color: rgba(59, 130, 246, 0.55);
-      background: rgba(255, 255, 255, 0.07);
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    #messageInput:focus {
+      border-color: rgba(59, 130, 246, 0.5);
     }
 
     #sendBtn {
-      width: 100%;
       background: linear-gradient(135deg, #3b82f6, #2563eb);
       color: white;
       border: none;
-      border-radius: 16px;
-      padding: 17px;
-      font-size: 1.1rem;
+      border-radius: 14px;
+      padding: 0 18px;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 10px 28px -5px rgba(59, 130, 246, 0.4);
-      transition: all 0.25s ease;
-    }
-
-    #sendBtn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 32px -5px rgba(59, 130, 246, 0.5);
+      font-size: 0.95rem;
     }
 
     #sendBtn:disabled {
-      opacity: 0.65;
+      opacity: 0.6;
       cursor: not-allowed;
-      transform: none;
     }
 
     .status {
-      margin-top: 22px;
-      font-size: 0.9rem;
-      color: #a1a1aa;
-      min-height: 22px;
       text-align: center;
+      font-size: 0.85rem;
+      color: #a1a1aa;
+      margin-top: 10px;
+      min-height: 20px;
     }
 
     .status.success { color: #34d399; }
     .status.error { color: #f87171; }
-
-    .footer {
-      margin-top: 24px;
-      text-align: center;
-      font-size: 0.8rem;
-      color: #52525b;
-    }
   </style>
 </head>
 <body>
@@ -198,19 +208,20 @@
       <!-- Code Section -->
       <div id="codeSection">
         <input type="password" id="code" placeholder="••••" maxlength="8" autocomplete="off" autofocus>
+        <div class="status" id="codeStatus"></div>
       </div>
 
-      <!-- Message Section -->
-      <div id="messageSection">
-        <label for="message">Your message</label>
-        <textarea id="message" placeholder="Type your message here..."></textarea>
-        <button id="sendBtn">Send Message</button>
-      </div>
+      <!-- Chat Section -->
+      <div id="chatSection">
+        <div id="messages"></div>
 
-      <div class="status" id="status"></div>
+        <div class="input-area">
+          <input type="text" id="messageInput" placeholder="Type a message..." autocomplete="off">
+          <button id="sendBtn">Send</button>
+        </div>
+        <div class="status" id="status"></div>
+      </div>
     </div>
-
-    <div class="footer">Private messaging</div>
   </div>
 
   <script>
@@ -219,84 +230,113 @@
 
     const codeInput = document.getElementById("code");
     const codeSection = document.getElementById("codeSection");
-    const messageSection = document.getElementById("messageSection");
-    const messageInput = document.getElementById("message");
+    const chatSection = document.getElementById("chatSection");
+    const messagesDiv = document.getElementById("messages");
+    const messageInput = document.getElementById("messageInput");
     const sendBtn = document.getElementById("sendBtn");
     const status = document.getElementById("status");
+    const codeStatus = document.getElementById("codeStatus");
     const subtitle = document.getElementById("subtitle");
+
+    let eventSource = null;
 
     // Check code
     codeInput.addEventListener("input", () => {
       if (codeInput.value === CORRECT_CODE) {
         codeSection.style.display = "none";
-        messageSection.style.display = "block";
-        subtitle.textContent = "Type a message to send";
-        status.textContent = "Code accepted";
-        status.className = "status success";
+        chatSection.style.display = "flex";
+        subtitle.textContent = "Connected";
+        codeStatus.textContent = "";
         messageInput.focus();
-
-        // Clear success message after a moment
-        setTimeout(() => {
-          status.textContent = "";
-          status.className = "status";
-        }, 1500);
-      } else {
-        status.textContent = "";
-        status.className = "status";
+        startListening();
       }
     });
 
+    // Start listening for incoming messages (from phone)
+    function startListening() {
+      if (eventSource) eventSource.close();
+
+      // Using ntfy Server-Sent Events
+      eventSource = new EventSource(`https://ntfy.sh/${TOPIC}/sse`);
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+
+          // Ignore our own messages if needed, or show everything
+          if (data.event === "message" && data.message) {
+            addMessage(data.message, "received");
+          }
+        } catch (e) {
+          console.log("Parse error", e);
+        }
+      };
+
+      eventSource.onerror = () => {
+        // Auto reconnect is handled by the browser mostly
+        console.log("SSE connection error - will retry");
+      };
+    }
+
     // Send message
     sendBtn.addEventListener("click", sendMessage);
-
     messageInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-        sendMessage();
-      }
+      if (e.key === "Enter") sendMessage();
     });
 
     async function sendMessage() {
       const msg = messageInput.value.trim();
+      if (!msg) return;
 
-      if (!msg) {
-        status.textContent = "Please type a message first";
-        status.className = "status error";
-        return;
-      }
-
-      status.textContent = "Sending...";
-      status.className = "status";
       sendBtn.disabled = true;
+      status.textContent = "Sending...";
 
       try {
         const res = await fetch(`https://ntfy.sh/${TOPIC}`, {
           method: "POST",
           body: msg,
           headers: {
-            "Title": "Message from Ali",
+            "Title": "Message Ali",
             "Priority": "high",
             "Tags": "speech_balloon"
           }
         });
 
         if (res.ok) {
-          status.textContent = "Message sent successfully!";
-          status.className = "status success";
+          addMessage(msg, "sent");
           messageInput.value = "";
-
-          setTimeout(() => {
-            status.textContent = "";
-            status.className = "status";
-          }, 2500);
+          status.textContent = "";
         } else {
           throw new Error();
         }
       } catch (e) {
-        status.textContent = "Failed to send. Try again.";
+        status.textContent = "Failed to send";
         status.className = "status error";
       }
 
       sendBtn.disabled = false;
+      messageInput.focus();
+    }
+
+    function addMessage(text, type) {
+      const div = document.createElement("div");
+      div.className = `message ${type}`;
+
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      div.innerHTML = `
+        ${escapeHtml(text)}
+        <div class="time">${time}</div>
+      `;
+
+      messagesDiv.appendChild(div);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
     }
   </script>
 </body>
