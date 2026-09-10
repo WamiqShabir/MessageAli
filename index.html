@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Message Ali</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,96 +12,119 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
     }
 
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: #050508;
       color: #ffffff;
-      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 12px;
       position: relative;
+      overflow: hidden;
     }
 
+    /* Soft background glow */
     body::before {
       content: "";
       position: absolute;
-      width: 700px;
-      height: 700px;
-      background: radial-gradient(circle, rgba(59, 130, 246, 0.13) 0%, transparent 70%);
-      top: 50%;
+      width: 120vw;
+      height: 120vw;
+      max-width: 600px;
+      max-height: 600px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.16) 0%, transparent 70%);
+      top: 40%;
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 0;
+      pointer-events: none;
     }
 
     .container {
       position: relative;
       z-index: 1;
       width: 100%;
-      max-width: 440px;
+      max-width: 480px;
+      height: 100%;
+      max-height: 860px;
+      display: flex;
+      flex-direction: column;
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.09);
       border-radius: 24px;
-      padding: 28px 20px 20px;
-      backdrop-filter: blur(24px);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.55);
+      padding: 20px 16px 16px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
       display: flex;
       flex-direction: column;
-      height: 80vh;
-      max-height: 720px;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+      flex-shrink: 0;
     }
 
     h1 {
-      font-size: 1.6rem;
+      font-size: 1.55rem;
       font-weight: 700;
-      text-align: center;
-      margin-bottom: 4px;
+      letter-spacing: -0.5px;
       background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
     }
 
     .subtitle {
-      text-align: center;
       color: #71717a;
-      font-size: 0.9rem;
-      margin-bottom: 18px;
+      font-size: 0.88rem;
     }
 
+    /* Code Section */
     #codeSection {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       flex: 1;
+      padding: 20px 8px;
     }
 
     #code {
       width: 100%;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 16px;
-      padding: 16px;
-      font-size: 1.5rem;
+      padding: 18px 16px;
+      font-size: 1.6rem;
       color: white;
       text-align: center;
-      letter-spacing: 10px;
+      letter-spacing: 12px;
       outline: none;
-      margin-bottom: 16px;
+      transition: all 0.2s ease;
     }
 
     #code:focus {
-      border-color: rgba(59, 130, 246, 0.55);
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+      border-color: rgba(59, 130, 246, 0.6);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
     }
 
+    /* Chat Section */
     #chatSection {
       display: none;
       flex-direction: column;
@@ -112,98 +135,171 @@
     #messages {
       flex: 1;
       overflow-y: auto;
-      padding: 10px 4px;
-      margin-bottom: 14px;
+      overflow-x: hidden;
+      padding: 8px 4px 12px;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Custom scrollbar for desktop */
+    #messages::-webkit-scrollbar {
+      width: 4px;
+    }
+    #messages::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
     }
 
     .message {
-      max-width: 85%;
-      padding: 10px 14px;
-      border-radius: 16px;
+      max-width: 82%;
+      padding: 11px 14px;
+      border-radius: 18px;
       font-size: 0.95rem;
-      line-height: 1.4;
+      line-height: 1.45;
       word-wrap: break-word;
+      animation: messageIn 0.25s ease;
+    }
+
+    @keyframes messageIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .message.received {
-      background: rgba(59, 130, 246, 0.15);
-      border: 1px solid rgba(59, 130, 246, 0.2);
+      background: rgba(59, 130, 246, 0.18);
+      border: 1px solid rgba(59, 130, 246, 0.22);
       align-self: flex-start;
-      border-bottom-left-radius: 4px;
+      border-bottom-left-radius: 5px;
     }
 
     .message.sent {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       align-self: flex-end;
-      border-bottom-right-radius: 4px;
+      border-bottom-right-radius: 5px;
     }
 
     .message .time {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       color: #71717a;
-      margin-top: 4px;
+      margin-top: 5px;
+      text-align: right;
     }
 
+    .message.received .time {
+      text-align: left;
+    }
+
+    /* Input Area */
     .input-area {
       display: flex;
       gap: 10px;
+      padding-top: 8px;
+      flex-shrink: 0;
     }
 
     #messageInput {
       flex: 1;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 14px;
-      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 14px 16px;
       color: white;
-      font-size: 0.95rem;
+      font-size: 1rem;
       outline: none;
       font-family: inherit;
+      transition: all 0.2s ease;
     }
 
     #messageInput:focus {
-      border-color: rgba(59, 130, 246, 0.5);
+      border-color: rgba(59, 130, 246, 0.55);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     #sendBtn {
       background: linear-gradient(135deg, #3b82f6, #2563eb);
       color: white;
       border: none;
-      border-radius: 14px;
-      padding: 0 18px;
+      border-radius: 16px;
+      padding: 0 20px;
       font-weight: 600;
-      cursor: pointer;
       font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 72px;
+    }
+
+    #sendBtn:active {
+      transform: scale(0.97);
     }
 
     #sendBtn:disabled {
-      opacity: 0.6;
+      opacity: 0.55;
       cursor: not-allowed;
     }
 
     .status {
       text-align: center;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       color: #a1a1aa;
-      margin-top: 10px;
-      min-height: 20px;
+      margin-top: 8px;
+      min-height: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 480px) {
+      body {
+        padding: 0;
+      }
+
+      .container {
+        max-height: 100%;
+        height: 100%;
+      }
+
+      .card {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        height: 100%;
+        max-height: 100%;
+      }
+
+      h1 {
+        font-size: 1.4rem;
+      }
+    }
+
+    /* iPad / tablet */
+    @media (min-width: 768px) {
+      .card {
+        border-radius: 28px;
+        padding: 28px 24px 20px;
+      }
+
+      h1 {
+        font-size: 1.75rem;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="card">
-      <h1>Message Ali</h1>
-      <p class="subtitle" id="subtitle">Enter the access code</p>
-
-      <div id="codeSection">
-        <input type="password" id="code" placeholder="••••" maxlength="8" autocomplete="off" autofocus>
+      <div class="header">
+        <h1>Message Ali</h1>
+        <p class="subtitle" id="subtitle">Enter the access code</p>
       </div>
 
+      <!-- Code Section -->
+      <div id="codeSection">
+        <input type="password" id="code" placeholder="••••" maxlength="8" autocomplete="off" autofocus inputmode="numeric">
+      </div>
+
+      <!-- Chat Section -->
       <div id="chatSection">
         <div id="messages"></div>
 
@@ -230,7 +326,7 @@
     const subtitle = document.getElementById("subtitle");
 
     let eventSource = null;
-    let pendingSent = new Set(); // stores messages we just sent
+    let pendingSent = new Set();
 
     // Check code
     codeInput.addEventListener("input", () => {
@@ -256,23 +352,22 @@
             const msg = data.message;
 
             if (pendingSent.has(msg)) {
-              // This is a message we just sent → show as "sent"
               pendingSent.delete(msg);
               addMessage(msg, "sent");
             } else {
-              // Message coming from the phone
               addMessage(msg, "received");
             }
           }
-        } catch (e) {
-          console.log(e);
-        }
+        } catch (e) {}
       };
     }
 
     sendBtn.addEventListener("click", sendMessage);
     messageInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") sendMessage();
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+      }
     });
 
     async function sendMessage() {
@@ -282,7 +377,6 @@
       sendBtn.disabled = true;
       status.textContent = "Sending...";
 
-      // Remember this message so we can recognize it when it comes back
       pendingSent.add(msg);
 
       try {
