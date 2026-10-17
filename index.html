@@ -280,34 +280,31 @@
     const subtitle = document.getElementById("subtitle");
 
     let eventSource = null;
-    let pendingSent = new Set();          // text of messages we just sent
-    let knownIds = new Set();             // ntfy message ids we already showed
-    let history = [];                     // { id, text, type, time }
+    let pendingSent = new Set();   // texts we just posted (for matching if needed)
+    let knownIds = new Set();      // ntfy message ids already shown
+    let history = [];              // { id, text, type, time }
 
-    // ---------- localStorage helpers ----------
+    // ---------- localStorage ----------
     function loadHistory() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) history = JSON.parse(raw);
-        else history = [];
+        history = raw ? JSON.parse(raw) : [];
       } catch (e) {
         history = [];
       }
-      // rebuild knownIds
       knownIds = new Set(history.filter(m => m.id).map(m => m.id));
     }
 
     function saveHistory() {
       try {
-        // keep last ~200 messages to avoid huge storage
         if (history.length > 200) history = history.slice(-200);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
       } catch (e) {}
     }
 
-    // ---------- UI helpers ----------
+    // ---------- UI ----------
     function addMessage(text, type, timeStr, id, save = true) {
-      if (id && knownIds.has(id)) return; // already shown
+      if (id && knownIds.has(id)) return;
       if (id) knownIds.add(id);
 
       const div = document.createElement("div");
@@ -321,12 +318,7 @@
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
       if (save) {
-        history.push({
-          id: id || null,
-          text,
-          type,
-          time
-        });
+        history.push({ id: id || null, text, type, time });
         saveHistory();
       }
     }
@@ -361,7 +353,6 @@
       loadHistory();
       renderHistory();
 
-      // 1) Fetch recent messages from ntfy cache (last ~12 h)
       status.textContent = "Loading history...";
       try {
         const res = await fetch(`https://ntfy.sh/${TOPIC}/json?poll=1&since=all`);
@@ -372,27 +363,27 @@
             try {
               const data = JSON.parse(line);
               if (data.event === "message" && data.message) {
-                // messages from cache that we don't already have
-                if (!data.id || !knownIds.has(data.id)) {
-                  // try to guess if it was one we sent earlier (same text still in pending is rare)
-                  const type = pendingSent.has(data.message) ? "sent" : "received";
-                  if (pendingSent.has(data.message)) pendingSent.delete(data.message);
+                if (data.id && knownIds.has(data.id)) continue;
 
-                  const timeStr = data.time
-                    ? new Date(data.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    : undefined;
-                  addMessage(data.message, type, timeStr, data.id);
+                // Only treat as "sent" if it is still in the pending set
+                // (very rare for history, but safe)
+                let type = "received";
+                if (pendingSent.has(data.message)) {
+                  type = "sent";
+                  pendingSent.delete(data.message);
                 }
+
+                const timeStr = data.time
+                  ? new Date(data.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                  : undefined;
+                addMessage(data.message, type, timeStr, data.id);
               }
             } catch (e) {}
           }
         }
-      } catch (e) {
-        // ignore – we still have local history
-      }
+      } catch (e) {}
       status.textContent = "";
 
-      // 2) Live SSE stream
       if (eventSource) eventSource.close();
       eventSource = new EventSource(`https://ntfy.sh/${TOPIC}/sse`);
 
@@ -400,26 +391,21 @@
         try {
           const data = JSON.parse(event.data);
           if (data.event === "message" && data.message) {
+            // Already shown (either from local history or from our own send)
             if (data.id && knownIds.has(data.id)) return;
 
+            let type = "received";
             if (pendingSent.has(data.message)) {
+              type = "sent";
               pendingSent.delete(data.message);
-              const timeStr = data.time
-                ? new Date(data.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                : undefined;
-              addMessage(data.message, "sent", timeStr, data.id);
-            } else {
-              const timeStr = data.time
-                ? new Date(data.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                : undefined;
-              addMessage(data.message, "received", timeStr, data.id);
             }
+
+            const timeStr = data.time
+              ? new Date(data.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              : undefined;
+            addMessage(data.message, type, timeStr, data.id);
           }
         } catch (e) {}
-      };
-
-      eventSource.onerror = () => {
-        // EventSource will auto-reconnect
       };
     }
 
@@ -451,22 +437,35 @@
           }
         });
 
-        if (!res.ok) throw new Error();
+        if (!res.ok) throw new Error("HTTP " + res.status);
 
-        // optionally parse the returned message object to get its id early
+        // Show the message immediately as "sent"
+        let id = null;
+        let timeStr = undefined;
         try {
           const data = await res.json();
           if (data && data.id) {
-            // we already know the id, mark it so SSE doesn't duplicate
-            knownIds.add(data.id);
+            id = data.id;
+            if (data.time) {
+              timeStr = new Date(data.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
           }
-        } catch (e) {}
+        } catch (e) {
+          // response wasn't JSON – still fine, we'll rely on SSE
+        }
+
+        // Add it right now so the user sees it instantly
+        addMessage(msg, "sent", timeStr, id);
+
+        // Remove from pending so SSE (if it still arrives) treats it as already handled
+        pendingSent.delete(msg);
 
         messageInput.value = "";
         status.textContent = "";
       } catch (e) {
         pendingSent.delete(msg);
         status.textContent = "Failed to send";
+        console.error(e);
       }
 
       sendBtn.disabled = false;
